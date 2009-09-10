@@ -2,11 +2,13 @@
 #include <string>
 
 #include <QApplication>
-#include <QPushButton>
+//#include <QPushButton>
 
 #include <boost/filesystem/fstream.hpp>
 
 #include <SDL/SDL.h>
+
+#include "main_window.hpp"
 
 void SDLTest()
 {
@@ -50,9 +52,14 @@ int main(int argc, char *argv[])
 	log.writeToLog("testing QT4....");
 	QApplication app(argc, argv);
 
+	main_window window;
+	window.resize(640, 480);
+	window.show();
+/*
 	QPushButton hello("Hello world!");
 	hello.resize(100, 30);
 
 	hello.show();
+*/
 	return app.exec();
 }
