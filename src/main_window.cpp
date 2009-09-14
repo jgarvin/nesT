@@ -29,9 +29,8 @@ main_window::main_window(QWidget *parent)
 
 main_window::~main_window()
 {
-	delete file_menu;
-	delete open_action;
-	delete exit_action;
+	// child widgets' destructors are automatically called by the parent widget's destructor.  
+  	// In our case the QActions and QMenus are deleted by the QMainWindow destructor
 }
 
 /* A slot that allows a user to select a rom using the File Open dialog. */
