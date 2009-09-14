@@ -2,6 +2,9 @@
  * The main display window for nesT.
  */
 
+#ifndef _MAIN_WINDOW_H_
+#define _MAIN_WINDOW_H_
+
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QAction>
@@ -26,3 +29,5 @@ protected slots:
 private:
 	// nothing for now
 };
+
+#endif // _MAIN_WINDOW_H_
