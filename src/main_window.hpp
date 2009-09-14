@@ -17,7 +17,11 @@ public:
 
 protected:
 	QAction *open_action;
+	QAction *exit_action;
 	QMenu   *file_menu;
+
+protected slots:
+	void select_rom();
 
 private:
 	// nothing for now
