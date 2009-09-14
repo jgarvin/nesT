@@ -1,9 +1,9 @@
 /*
- * The main display window for nesT.
+ * The main display window for nesT.  It's main
  */
 
-#ifndef _MAIN_WINDOW_H_
-#define _MAIN_WINDOW_H_
+#ifndef INCLUDED_NEST_MAIN_WINDOW_HPP
+#define INCLUDED_NEST_MAIN_WINDOW_HPP
 
 #include <QMainWindow>
 #include <QMenuBar>
@@ -30,4 +30,4 @@ private:
 	// nothing for now
 };
 
-#endif // _MAIN_WINDOW_H_
+#endif // INCLUDED_NEST_MAIN_WINDOW_HPP
