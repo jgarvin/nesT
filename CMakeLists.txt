@@ -3,7 +3,7 @@ project(nesT)
 
 find_package(Qt4 REQUIRED)
 set( Boost_ADDITIONAL_VERSIONS "1.37" "1.37.0" )
-find_package(Boost 1.37 COMPONENTS thread filesystem system REQUIRED)
+find_package(Boost 1.37 COMPONENTS thread program_options filesystem system REQUIRED)
 find_package ( SDL REQUIRED )
 find_package(Automoc4 REQUIRED)
 
@@ -23,10 +23,7 @@ automoc4_add_executable(nesT ${CPP_FILES})
 include_directories( ${Boost_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
 INCLUDE(${QT_USE_FILE})
 
-# Note: Boost_LIBRARIES doesn't seem to be reliable, specify them individually
 target_link_libraries(nesT ${QT_LIBRARIES}
-						   ${Boost_THREAD_LIBRARY}
-						   ${Boost_FILESYSTEM_LIBRARY}
-						   ${Boost_SYSTEM_LIBRARY}
+						   ${Boost_LIBRARIES}
 						   ${SDL_LIBRARY}
 						   SDLmain)
