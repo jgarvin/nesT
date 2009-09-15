@@ -50,9 +50,56 @@ int Rom::num_chr_banks() const
 	return raw_nes_data_[5];
 }
 
+int Rom::prg_bank_offset(int i) const
+{
+	return BANK_START_OFFSET + PRG_BANK_SIZE * i;
+}
+
+int Rom::chr_bank_offset(int i) const
+{
+	return prg_bank_offset(num_prg_banks()) + CHR_BANK_SIZE * i;
+}
+
+std::vector<char*> Rom::prg_banks()
+{
+	std::vector<char*> result;
+	
+	for(int i = 0; i < num_prg_banks(); ++i)
+		result.push_back(&raw_nes_data_[prg_bank_offset(i)]);
+
+	return result;
+}
+
+std::vector<char*> Rom::chr_banks()
+{
+	std::vector<char*> result;
+
+	for(int i = 0; i < num_chr_banks(); ++i)
+		result.push_back(&raw_nes_data_[chr_bank_offset(i)]);
+	
+	return result;
+}
+
 std::string Rom::title() const
 {
-	const char* title_start = &(*(raw_nes_data_.end() - 122));
+	size_t title_offset = chr_bank_offset(num_chr_banks()) + 1;
+	const char* title_start = &raw_nes_data_[title_offset];
+
+	std::cout << title_offset << " " << ((size_t)title_start) - title_offset << std::endl;
+
+	std::cout << raw_nes_data_.size() - 122 << std::endl;
+
+	//  for(int i = -122; i <= 0; ++i)
+	// 	 std::cout << size_t(&(raw_nes_data_[raw_nes_data_.size() + i]))
+	// 			  << raw_nes_data_[raw_nes_data_.size() + i];
+
+	// for(int i = 0; i < 30; i++)
+	// 	std::cout << raw_nes_data_[title_offset + i] << std::endl;
+
+	// for(int i = -100; i <= 100; ++i)
+	// 	std::cout << title_start[i];
+	std::cout << std::endl;
+	//std::cout << title_start - 5 << std::endl;
 	return std::string(title_start);
 }
 
