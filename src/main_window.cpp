@@ -2,17 +2,21 @@
  * I'll add something here...maybe.
  */
 
+#include <fstream>
+#include <stdexcept>
 #include <QApplication>
 #include <QKeySequence>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QString>
 #include <QDir>
 #include "main_window.hpp"
+#include "rom.hpp"
+
 
 main_window::main_window(QWidget *parent)
 	: QMainWindow(parent)
 {
+	// Add File Menu
 	open_action = new QAction(tr("&Open..."), this);
 	open_action->setShortcuts(QKeySequence::Open);
 	open_action->setStatusTip(tr("Open a new ROM"));
@@ -25,6 +29,8 @@ main_window::main_window(QWidget *parent)
 	file_menu = menuBar()->addMenu(tr("&File"));
 	file_menu->addAction(open_action);
 	file_menu->addAction(exit_action);
+
+	rom_dir = QDir::homePath();
 }
 
 main_window::~main_window()
@@ -37,14 +43,51 @@ main_window::~main_window()
 void main_window::select_rom()
 {
 	// TODO:  Support for compressed files (zip, 7z, tar.gz, etc.)
-	QString filepath = QFileDialog::getOpenFileName(this, tr("Select ROM"), QDir::homePath(),
+	QString filepath = QFileDialog::getOpenFileName(this, tr("Select ROM"), rom_dir,
 													tr("NES ROMs (*.nes)"), NULL, NULL);
-	QString message;
 
-	if (filepath.isNull())
-		message = tr("No games for you today?  How sad.");
-	else
-		message = tr("You want to play ") + filepath + tr("?  Good choice!");
-		
-	QMessageBox::information(this, tr("Test Box"), message, QMessageBox::Ok, QMessageBox::Ok);
-} 
+	if(!filepath.isNull())
+	{
+		std::ifstream file(filepath.toAscii().constData());
+
+		try
+		{
+			Rom rom(file);
+		}
+		catch(std::runtime_error e)
+		{
+			QString error = tr("Exception occurred when trying to open ") + filepath + ":\n\n " +
+				e.what() + "\n\n" + tr("The rom file might be corrupt.");
+			show_error(tr("Could not open ROM"), error);
+		}
+		// File dialogs that don't remember where you last were are annoying =)
+		rom_dir = filepath;
+	}
+}
+
+/* Display an information box with the given title and message.  The box will have an OK button on
+ * it.
+ */
+void main_window::show_message(const QString& title, const QString& message)
+{
+	QMessageBox::information(this, title, message, QMessageBox::Ok, QMessageBox::Ok);
+}
+
+/* Display a dialog box that asks the user a yes/no question.  The box will have Yes and No buttons
+ * on it.  Return True if the user clicked Yes and False otherwise.
+ */ 
+bool main_window::ask_question(const QString& title, const QString& question)
+{
+	QMessageBox::StandardButton button;
+	button = QMessageBox::question(this, title, question, QMessageBox::Yes | QMessageBox::No,
+								   QMessageBox::No);
+	return QMessageBox::Yes == button;
+}
+
+/* Display an error message to the user with the given title and message.  The box will have an OK
+ * button on it.
+ */
+void main_window::show_error(const QString& title, const QString& error)
+{
+	QMessageBox::critical(this, title, error, QMessageBox::Ok, QMessageBox::Ok);
+}

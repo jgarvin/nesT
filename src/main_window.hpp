@@ -1,5 +1,5 @@
 /*
- * The main display window for nesT.  It's main
+ * The main display window for nesT.
  */
 
 #ifndef INCLUDED_NEST_MAIN_WINDOW_HPP
@@ -9,6 +9,7 @@
 #include <QMenuBar>
 #include <QAction>
 #include <QMenu>
+#include <QString>
 
 class main_window : public QMainWindow
 {
@@ -18,13 +19,19 @@ public:
 	main_window(QWidget *parent = 0);
 	virtual ~main_window();
 
+	virtual void show_message(const QString& title, const QString& message);
+	virtual bool ask_question(const QString& title, const QString& question);
+	virtual void show_error(const QString& title, const QString& error);
+
 protected:
 	QAction *open_action;
 	QAction *exit_action;
 	QMenu   *file_menu;
 
+	QString  rom_dir;
+
 protected slots:
-	void select_rom();
+	virtual void select_rom();
 
 private:
 	// nothing for now
