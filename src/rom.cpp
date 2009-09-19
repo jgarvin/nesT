@@ -35,7 +35,22 @@ rom::rom(std::ifstream& file)
 
 	std::cout << "Loaded rom Size: " << raw_nes_data_.size() << std::endl;
 
-	std::cout << toString();
+	std::cout << to_string();
+}
+
+std::vector<sprite*> rom::construct_sprites()
+{
+	std::vector<sprite*> sprites;
+
+	for(int bank = 0; bank < num_chr_banks(); ++bank) {
+		for(int sprite_offset = 0; sprite_offset < CHR_BANK_SIZE; sprite_offset += 16)
+			sprites.push_back(
+				new sprite(
+					&raw_nes_data_[chr_bank_offset(bank) + sprite_offset]
+					));
+	}
+
+	return sprites;
 }
 
 int rom::num_prg_banks() const
@@ -95,7 +110,7 @@ std::string rom::title() const
 	return std::string(title_start);
 }
 
-std::string rom::toString() const
+std::string rom::to_string() const
 {
 	std::ostringstream o;
 

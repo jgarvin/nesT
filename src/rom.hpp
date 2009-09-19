@@ -7,19 +7,23 @@
 
 #include <boost/array.hpp>
 
+#include "sprite.hpp"
+
 class rom
 {
 public:
 	rom(std::ifstream& file);
 
+	std::string title() const;
+	std::string to_string() const;
+
+	// Up to the calller to delete the sprites
+	std::vector<sprite*> construct_sprites(); 
+
+private:
 	std::vector<char*> prg_banks();
 	std::vector<char*> chr_banks();
 
-	std::string title() const;
-
-	std::string toString() const;
-
-private:
 	int num_prg_banks() const;
 	int num_chr_banks() const;
 	int prg_bank_offset(int i) const;

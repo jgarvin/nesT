@@ -73,6 +73,13 @@ int main(int argc, char *argv[])
 			if(!rom_file.is_open())
 				throw std::runtime_error("Couldn't open specified ROM file. Make sure the file exists and you have proper permissions.");
 			rom cmd_line_rom(rom_file);
+			std::vector<sprite*> sprites = cmd_line_rom.construct_sprites();
+			for(std::vector<sprite*>::iterator i = sprites.begin(); i != sprites.end(); ++i) {
+				std::cout << (*i)->to_string();
+				std::cout << std::endl << std::endl;
+			}
+			for(std::vector<sprite*>::iterator i = sprites.begin(); i != sprites.end(); ++i)
+				delete *i;
         } else {
 			std::cout << "No ROM selected.\n";
         }
