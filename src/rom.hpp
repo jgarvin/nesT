@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/array.hpp>
+
 class Rom
 {
 public:
@@ -28,6 +30,8 @@ private:
 	static const int BANK_START_OFFSET = 16;
 	static const int PRG_BANK_SIZE = 16384;
 	static const int CHR_BANK_SIZE = 8192;
+
+	static const boost::array<char, 4> NORMAL_HEADER;
 };
 
 #endif

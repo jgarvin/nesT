@@ -1,21 +1,24 @@
 #include <stdexcept>
-#include <cstring>
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <iterator>
 
+#include <algorithm>
+
 #include "rom.hpp"
+
+const boost::array<char, 4> Rom::NORMAL_HEADER = { { 'N', 'E', 'S', 0x01a } };
 
 Rom::Rom(std::ifstream& file)
 {
 	file.seekg(0, std::ios::end);
 	std::streampos size = file.tellg();
-    raw_nes_data_.reserve(size);
+    //raw_nes_data_.reserve(size);
 
 	std::cout << "File size: " << size << std::endl;
 
-    file.seekg(std::ios::beg);
+    file.seekg(0, std::ios::beg);
 	std::copy(std::istream_iterator<char>(file), std::istream_iterator<char>(),
 			  std::back_inserter(raw_nes_data_));
     file.close();
@@ -23,13 +26,9 @@ Rom::Rom(std::ifstream& file)
 	// Read ROM according to docs at:
 	// http://www.sadistech.com/nesromtool/romdoc.html
 
-	char header[4];
-	for(int i = 0; i < 3; ++i)
-		header[i] = raw_nes_data_[i];
-	header[3] = '\0';
-
-	if(std::strcmp(header, "NES") != 0) {
-		std::cout << "Header: " << header << std::endl;
+	// array comparer only checks as many elements as are in the array
+	if(!std::equal(NORMAL_HEADER.begin(), NORMAL_HEADER.begin() + 4, raw_nes_data_.begin()))
+	{
 		throw std::runtime_error("ROM Header check failed.");
 	}
 
