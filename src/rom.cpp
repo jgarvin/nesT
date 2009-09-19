@@ -8,9 +8,9 @@
 
 #include "rom.hpp"
 
-const boost::array<char, 4> Rom::NORMAL_HEADER = { { 'N', 'E', 'S', 0x01a } };
+const boost::array<char, 4> rom::NORMAL_HEADER = { { 'N', 'E', 'S', 0x01a } };
 
-Rom::Rom(std::ifstream& file)
+rom::rom(std::ifstream& file)
 {
 	// When you open a file in binary mode IT SKIPS WHITESPACE BY DEFAULT
 	// WTF C++? THERE IS NO CONCEPT OF 'WHITESPACE' IN A BINARY FILE. WTF?
@@ -33,34 +33,34 @@ Rom::Rom(std::ifstream& file)
 		throw std::runtime_error("ROM Header check failed.");
 	}
 
-	std::cout << "Loaded Rom Size: " << raw_nes_data_.size() << std::endl;
+	std::cout << "Loaded rom Size: " << raw_nes_data_.size() << std::endl;
 
 	std::cout << toString();
 }
 
-int Rom::num_prg_banks() const
+int rom::num_prg_banks() const
 {
 	// 4 is constant offset determined by .NES format
 	return raw_nes_data_[4];
 }
 
-int Rom::num_chr_banks() const
+int rom::num_chr_banks() const
 {
 	// 5 is constant offset determined by .NES format
 	return raw_nes_data_[5];
 }
 
-int Rom::prg_bank_offset(int i) const
+int rom::prg_bank_offset(int i) const
 {
 	return BANK_START_OFFSET + PRG_BANK_SIZE * i;
 }
 
-int Rom::chr_bank_offset(int i) const
+int rom::chr_bank_offset(int i) const
 {
 	return prg_bank_offset(num_prg_banks()) + CHR_BANK_SIZE * i;
 }
 
-std::vector<char*> Rom::prg_banks()
+std::vector<char*> rom::prg_banks()
 {
 	std::vector<char*> result;
 	
@@ -70,7 +70,7 @@ std::vector<char*> Rom::prg_banks()
 	return result;
 }
 
-std::vector<char*> Rom::chr_banks()
+std::vector<char*> rom::chr_banks()
 {
 	std::vector<char*> result;
 
@@ -80,7 +80,7 @@ std::vector<char*> Rom::chr_banks()
 	return result;
 }
 
-std::string Rom::title() const
+std::string rom::title() const
 {
 	size_t title_offset = chr_bank_offset(num_chr_banks());
 	const char* title_start = &raw_nes_data_[title_offset];
@@ -95,7 +95,7 @@ std::string Rom::title() const
 	return std::string(title_start);
 }
 
-std::string Rom::toString() const
+std::string rom::toString() const
 {
 	std::ostringstream o;
 

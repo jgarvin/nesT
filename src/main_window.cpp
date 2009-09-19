@@ -52,7 +52,7 @@ void main_window::select_rom()
 
 		try
 		{
-			Rom rom(file);
+			rom rom(file);
 		}
 		catch(std::runtime_error e)
 		{

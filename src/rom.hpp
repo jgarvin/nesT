@@ -7,10 +7,10 @@
 
 #include <boost/array.hpp>
 
-class Rom
+class rom
 {
 public:
-	Rom(std::ifstream& file);
+	rom(std::ifstream& file);
 
 	std::vector<char*> prg_banks();
 	std::vector<char*> chr_banks();
