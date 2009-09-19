@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 			std::cout << "Loading rom: " 
 					  << vm["rom"].as<std::string>() << ".\n";
 
-			std::ifstream rom_file(vm["rom"].as<std::string>().c_str(), std::ios::binary);
+			std::ifstream rom_file(vm["rom"].as<std::string>().c_str(), std::ios::in | std::ios::binary);
 			if(!rom_file.is_open())
 				throw std::runtime_error("Couldn't open specified ROM file. Make sure the file exists and you have proper permissions.");
 			Rom cmd_line_rom(rom_file);

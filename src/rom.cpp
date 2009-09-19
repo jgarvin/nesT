@@ -12,11 +12,12 @@ const boost::array<char, 4> Rom::NORMAL_HEADER = { { 'N', 'E', 'S', 0x01a } };
 
 Rom::Rom(std::ifstream& file)
 {
+	// When you open a file in binary mode IT SKIPS WHITESPACE BY DEFAULT
+	// WTF C++? THERE IS NO CONCEPT OF 'WHITESPACE' IN A BINARY FILE. WTF?
+	file >> std::noskipws;
+	
 	file.seekg(0, std::ios::end);
 	std::streampos size = file.tellg();
-    //raw_nes_data_.reserve(size);
-
-	std::cout << "File size: " << size << std::endl;
 
     file.seekg(0, std::ios::beg);
 	std::copy(std::istream_iterator<char>(file), std::istream_iterator<char>(),
@@ -32,7 +33,7 @@ Rom::Rom(std::ifstream& file)
 		throw std::runtime_error("ROM Header check failed.");
 	}
 
-	std::cout << "Rom load success!" << std::endl;
+	std::cout << "Loaded Rom Size: " << raw_nes_data_.size() << std::endl;
 
 	std::cout << toString();
 }
@@ -81,24 +82,12 @@ std::vector<char*> Rom::chr_banks()
 
 std::string Rom::title() const
 {
-	size_t title_offset = chr_bank_offset(num_chr_banks()) + 1;
+	size_t title_offset = chr_bank_offset(num_chr_banks());
 	const char* title_start = &raw_nes_data_[title_offset];
 
-	std::cout << title_offset << " " << ((size_t)title_start) - title_offset << std::endl;
+	if(*title_start == 0xFF)
+	    ++title_start; // Some roms the title starts 127 bytes back, not 128
 
-	std::cout << raw_nes_data_.size() - 122 << std::endl;
-
-	//  for(int i = -122; i <= 0; ++i)
-	// 	 std::cout << size_t(&(raw_nes_data_[raw_nes_data_.size() + i]))
-	// 			  << raw_nes_data_[raw_nes_data_.size() + i];
-
-	// for(int i = 0; i < 30; i++)
-	// 	std::cout << raw_nes_data_[title_offset + i] << std::endl;
-
-	// for(int i = -100; i <= 100; ++i)
-	// 	std::cout << title_start[i];
-	std::cout << std::endl;
-	//std::cout << title_start - 5 << std::endl;
 	return std::string(title_start);
 }
 
