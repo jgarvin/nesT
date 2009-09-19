@@ -88,6 +88,10 @@ std::string Rom::title() const
 	if(*title_start == 0xFF)
 	    ++title_start; // Some roms the title starts 127 bytes back, not 128
 
+	// Not every ROM comes with title information
+	if(title_start > &raw_nes_data_.back())
+		return std::string(" ");
+
 	return std::string(title_start);
 }
 
