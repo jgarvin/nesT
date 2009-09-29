@@ -12,19 +12,25 @@
 #include "main_window.hpp"
 #include "rom.hpp"
 
+#include <iostream>
 
 main_window::main_window(QWidget *parent)
 	: QMainWindow(parent)
 {
+	canvas = new rom_canvas(this);
+	canvas->show();
+	canvas->update();
+
 	// Add File Menu
 	open_action = new QAction(tr("&Open..."), this);
 	open_action->setShortcuts(QKeySequence::Open);
 	open_action->setStatusTip(tr("Open a new ROM"));
 	connect(open_action, SIGNAL(triggered()), this, SLOT(select_rom()));
 
-	exit_action = new QAction(tr("E&xit"), this);
-	exit_action->setStatusTip(tr("Exit nesT"));
-	connect(exit_action, SIGNAL(triggered()), QApplication::instance(), SLOT(quit()));
+	exit_action = new QAction(tr(/*"E&xit"*/"&Update"), this);
+	exit_action->setStatusTip(tr(/*"Exit nesT"*/"Screen test"));
+	connect(exit_action, SIGNAL(triggered()), /*QApplication::instance()*/canvas, SLOT(/*quit()*/test()));
+	// Remember to change this back!!
 
 	file_menu = menuBar()->addMenu(tr("&File"));
 	file_menu->addAction(open_action);

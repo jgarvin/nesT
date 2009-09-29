@@ -14,10 +14,17 @@
 
 namespace po = boost::program_options;
 
-void SDLTest()
+bool SDLSetup()
 {
-	SDL_Init( SDL_INIT_EVERYTHING );
-	SDL_Quit();
+	bool result = true;
+
+	// we'll init the subsystems when we need them
+	if(SDL_Init(0) == -1)
+	{
+		std::cout << "SDL init error: " << SDL_GetError() << std::endl;
+		result = false;
+	}
+	return result;
 }
 
 // We'll use toast::logger, this is just to make sure boost is linking right
@@ -46,6 +53,8 @@ private:
 
 int main(int argc, char *argv[])
 {
+	int result = -1;
+
 	Log log("nesTLog.txt");
 	log.writeToLog("nesT starting up...");
 
@@ -89,20 +98,21 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-	log.writeToLog("testing SDL....");
-	SDLTest();
+	log.writeToLog("Setting up SDL...");
+	if(!SDLSetup())
+	{
+		log.writeToLog("SDL init error: " + std::string(SDL_GetError()));
+		SDL_ClearError();
+	}
 
-	log.writeToLog("testing QT4....");
+	log.writeToLog("Setting up QT4...");
 	QApplication app(argc, argv);
 
 	main_window window;
 	window.resize(640, 480);
 	window.show();
-/*
-	QPushButton hello("Hello world!");
-	hello.resize(100, 30);
 
-	hello.show();
-*/
-	return app.exec();
+	result = app.exec();
+	SDL_Quit();
+	return result;
 }

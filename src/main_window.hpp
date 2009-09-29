@@ -10,13 +10,14 @@
 #include <QAction>
 #include <QMenu>
 #include <QString>
+#include "rom_canvas.hpp"
 
 class main_window : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	main_window(QWidget *parent = 0);
+	explicit main_window(QWidget *parent = 0);
 	virtual ~main_window();
 
 	virtual void show_message(const QString& title, const QString& message);
@@ -29,6 +30,8 @@ protected:
 	QMenu   *file_menu;
 
 	QString  rom_dir;
+
+	rom_canvas *canvas;
 
 protected slots:
 	virtual void select_rom();
