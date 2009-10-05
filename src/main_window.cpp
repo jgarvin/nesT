@@ -17,24 +17,23 @@
 main_window::main_window(QWidget *parent)
 	: QMainWindow(parent)
 {
-	canvas = new rom_canvas(this);
-	canvas->show();
-	canvas->update();
-
 	// Add File Menu
 	open_action = new QAction(tr("&Open..."), this);
 	open_action->setShortcuts(QKeySequence::Open);
 	open_action->setStatusTip(tr("Open a new ROM"));
 	connect(open_action, SIGNAL(triggered()), this, SLOT(select_rom()));
 
-	exit_action = new QAction(tr(/*"E&xit"*/"&Update"), this);
-	exit_action->setStatusTip(tr(/*"Exit nesT"*/"Screen test"));
-	connect(exit_action, SIGNAL(triggered()), /*QApplication::instance()*/canvas, SLOT(/*quit()*/test()));
-	// Remember to change this back!!
-
+	exit_action = new QAction(tr("E&xit"), this);
+	exit_action->setStatusTip(tr("Exit nesT"));
+	connect(exit_action, SIGNAL(triggered()), QApplication::instance(), SLOT(quit()));
+	
 	file_menu = menuBar()->addMenu(tr("&File"));
 	file_menu->addAction(open_action);
 	file_menu->addAction(exit_action);
+
+	canvas = new rom_canvas(this);
+	setCentralWidget(canvas);
+	canvas->show();
 
 	rom_dir = QDir::homePath();
 }
@@ -48,7 +47,7 @@ main_window::~main_window()
 /* A slot that allows a user to select a rom using the File Open dialog. */
 void main_window::select_rom()
 {
-	// TODO:  Support for compressed files (zip, 7z, tar.gz, etc.)
+	// TODO: Support for opening compressed files
 	QString filepath = QFileDialog::getOpenFileName(this, tr("Select ROM"), rom_dir,
 													tr("NES ROMs (*.nes)"), NULL, NULL);
 
