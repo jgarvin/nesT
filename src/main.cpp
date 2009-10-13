@@ -84,8 +84,8 @@ int main(int argc, char *argv[])
 			rom cmd_line_rom(rom_file);
 			std::vector<sprite*> sprites = cmd_line_rom.construct_sprites();
 			for(std::vector<sprite*>::iterator i = sprites.begin(); i != sprites.end(); ++i) {
-				std::cout << (*i)->to_string();
-				std::cout << std::endl << std::endl;
+				//std::cout << (*i)->to_string();
+				//std::cout << std::endl << std::endl;
 			}
 			for(std::vector<sprite*>::iterator i = sprites.begin(); i != sprites.end(); ++i)
 				delete *i;

@@ -124,8 +124,8 @@ std::string rom::to_string() const
 
 	o << "PRG Banks: " << num_prg_banks() << std::endl
 	  << "CHR Banks: " << num_chr_banks() << std::endl
-	  << "Title: " << title() << std::endl;
-	
+	  << "Title: " << title() << std::endl
+	  << "Mirror Mode: " << *stored_mirror_mode() << std::endl;
 
 	return o.str();
 }
