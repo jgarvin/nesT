@@ -32,6 +32,11 @@ private:
 	int chr_bank_offset(int i) const;
 
 	boost::shared_ptr<mirror_mode> stored_mirror_mode() const;
+	bool battery_backed_ram() const;
+	bool trainer() const;
+
+	uint8_t mapper_number() const;
+	uint8_t num_ram_banks() const;
 	
 	std::vector<char> raw_nes_data_;
 

@@ -28,5 +28,11 @@ protected:
 	std::string to_string() const { return std::string("Vertical"); }
 };
 
+class four_screen_mirror_mode : public mirror_mode
+{
+protected:
+	std::string to_string() const { return std::string("Four Screen"); }
+};
+
 #endif
 

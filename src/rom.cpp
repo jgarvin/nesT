@@ -67,10 +67,56 @@ int rom::num_chr_banks() const
 
 boost::shared_ptr<mirror_mode> rom::stored_mirror_mode() const
 {
+	// This bit overrides horizontal/vertical choice
+	if(raw_nes_data_[6] & 8)
+		return boost::shared_ptr<mirror_mode>(new four_screen_mirror_mode);
+	
 	if(raw_nes_data_[6] & 1)
 		return boost::shared_ptr<mirror_mode>(new horizontal_mirror_mode);
 	else
 		return boost::shared_ptr<mirror_mode>(new vertical_mirror_mode);
+}
+
+bool rom::battery_backed_ram() const
+{
+	return raw_nes_data_[6] & 2;
+}
+
+bool rom::trainer() const
+{
+	return raw_nes_data_[6] & 4;
+}
+
+uint8_t rom::mapper_number() const
+{
+	uint8_t lower_bits = 0;
+	uint8_t higher_bits = 0;
+
+	// Lower four bits in upper four bits of byte 6
+	lower_bits |= raw_nes_data_[6] & ((1 << 4) |
+									  (1 << 5) |
+									  (1 << 6) |
+									  (1 << 7));
+
+	// Upper four bits in upper four bits of byte 7
+	higher_bits |= raw_nes_data_[7] & ((1 << 4) |
+									   (1 << 5) |
+									   (1 << 6) |
+									   (1 << 7));
+
+	uint8_t number = 0;
+	number |= lower_bits;
+	number |= (higher_bits << 4);
+
+	return number;
+}
+
+uint8_t rom::num_ram_banks() const
+{
+	if(raw_nes_data_[8] == 0)
+		return 1;
+
+	return raw_nes_data_[8];
 }
 
 int rom::prg_bank_offset(int i) const
@@ -125,7 +171,11 @@ std::string rom::to_string() const
 	o << "PRG Banks: " << num_prg_banks() << std::endl
 	  << "CHR Banks: " << num_chr_banks() << std::endl
 	  << "Title: " << title() << std::endl
-	  << "Mirror Mode: " << *stored_mirror_mode() << std::endl;
+	  << "Mirror Mode: " << *stored_mirror_mode() << std::endl
+	  << "Battery Backed RAM: " << (battery_backed_ram() ? "Yes" : "No") << std::endl
+	  << "Trainer Provided: " << (trainer() ? "Yes" : "No") << std::endl
+	  << "Mapper Number: " << int(mapper_number()) << std::endl
+	  << "RAM banks: " << int(num_ram_banks()) << std::endl;
 
 	return o.str();
 }
