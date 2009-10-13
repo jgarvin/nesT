@@ -9,7 +9,7 @@
 
 #include <SDL/SDL.h>
 
-#include "main_window.hpp"
+#include "MainWindow.hpp"
 #include "rom.hpp"
 
 namespace po = boost::program_options;
@@ -108,9 +108,9 @@ int main(int argc, char *argv[])
 	log.writeToLog("Setting up QT4...");
 	QApplication app(argc, argv);
 
-	main_window window;
-	window.resize(640, 480);
+	MainWindow window;
 	window.show();
+	window.resize(640, 480);
 
 	result = app.exec();
 	SDL_Quit();
