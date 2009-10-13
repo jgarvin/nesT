@@ -6,8 +6,10 @@
 #include <vector>
 
 #include <boost/array.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "sprite.hpp"
+#include "mirror_mode.hpp"
 
 class rom
 {
@@ -28,6 +30,8 @@ private:
 	int num_chr_banks() const;
 	int prg_bank_offset(int i) const;
 	int chr_bank_offset(int i) const;
+
+	boost::shared_ptr<mirror_mode> stored_mirror_mode() const;
 	
 	std::vector<char> raw_nes_data_;
 

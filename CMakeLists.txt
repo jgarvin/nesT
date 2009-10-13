@@ -33,3 +33,6 @@ target_link_libraries(nesT ${QT_LIBRARIES}
 						   ${Boost_LIBRARIES}
 						   ${SDL_LIBRARY}
 						   SDLmain)
+
+# We'll have to look up the options for other compilers, this assumes GCC
+set_target_properties(nesT PROPERTIES COMPILE_FLAGS "-std=c++0x")

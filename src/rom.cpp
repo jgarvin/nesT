@@ -65,6 +65,14 @@ int rom::num_chr_banks() const
 	return raw_nes_data_[5];
 }
 
+boost::shared_ptr<mirror_mode> rom::stored_mirror_mode() const
+{
+	if(raw_nes_data_[6] & 1)
+		return boost::shared_ptr<mirror_mode>(new horizontal_mirror_mode);
+	else
+		return boost::shared_ptr<mirror_mode>(new vertical_mirror_mode);
+}
+
 int rom::prg_bank_offset(int i) const
 {
 	return BANK_START_OFFSET + PRG_BANK_SIZE * i;
@@ -117,6 +125,7 @@ std::string rom::to_string() const
 	o << "PRG Banks: " << num_prg_banks() << std::endl
 	  << "CHR Banks: " << num_chr_banks() << std::endl
 	  << "Title: " << title() << std::endl;
+	
 
 	return o.str();
 }
