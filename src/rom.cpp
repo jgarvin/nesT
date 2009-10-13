@@ -121,7 +121,9 @@ uint8_t rom::num_ram_banks() const
 
 int rom::prg_bank_offset(int i) const
 {
-	return BANK_START_OFFSET + PRG_BANK_SIZE * i;
+	return BANK_START_OFFSET +
+		(trainer() ? 512 : 0) + // If a trainer is present takes 512 after header
+		PRG_BANK_SIZE * i;
 }
 
 int rom::chr_bank_offset(int i) const
