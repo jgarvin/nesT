@@ -10,7 +10,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDir>
-#include "MainWindow.hpp"
+#include "mainwindow.hpp"
 #include "rom.hpp"
 
 //#include <iostream>

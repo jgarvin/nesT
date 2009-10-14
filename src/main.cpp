@@ -9,7 +9,7 @@
 
 #include <SDL/SDL.h>
 
-#include "MainWindow.hpp"
+#include "mainwindow.hpp"
 #include "rom.hpp"
 
 namespace po = boost::program_options;

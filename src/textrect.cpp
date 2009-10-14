@@ -3,7 +3,7 @@
  */
 
 #include <QTextDocument>
-#include "TextRect.hpp"
+#include "textrect.hpp"
 
 TextRect::TextRect(QGraphicsItem *parent, const QString & text)
 	: QGraphicsRectItem(parent)

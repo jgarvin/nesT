@@ -2,7 +2,7 @@
  * This is the drawing area on the main window where game graphics will be displayed.
  */
 
-#include "RomCanvas.hpp"
+#include "romcanvas.hpp"
 #include <iostream>
 #include <QString>
 #include <QTimer>

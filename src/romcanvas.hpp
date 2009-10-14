@@ -8,7 +8,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QString>
-#include "TextRect.hpp"
+#include "textrect.hpp"
 
 class RomCanvas : public QGraphicsView
 {

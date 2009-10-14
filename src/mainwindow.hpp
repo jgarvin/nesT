@@ -11,7 +11,7 @@
 #include <QMenu>
 #include <QResizeEvent>
 #include <QString>
-#include "RomCanvas.hpp"
+#include "romcanvas.hpp"
 
 class MainWindow : public QMainWindow
 {
