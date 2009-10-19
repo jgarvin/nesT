@@ -99,14 +99,14 @@ void TextRect::setBorderWidth(int w)
 
 /* Return the currently set text as a plain text QString.
  */
-QString TextRect::text()
+QString TextRect::text() const
 {
 	return m_text->toPlainText();
 }
 
 /* Return the maximum width of the text before is wraps to the next line.
  */
-int TextRect::textWidth()
+int TextRect::textWidth() const
 {
 	return (int)m_text->textWidth();
 }
@@ -114,77 +114,77 @@ int TextRect::textWidth()
 /* Return how wide the text actually is.  This will be less than the textWidth if the text has not
  * reached the end of the line.
  */
-int TextRect::actualTextWidth()
+int TextRect::actualTextWidth() const
 {
 	return (int)m_text->document()->idealWidth();
 }
 
 /* Return the text color.
  */
-QColor TextRect::textColor()
+QColor TextRect::textColor() const
 {
 	return m_text->defaultTextColor();
 }
 	
 /* Return the color the rectangle was filled with.
  */
-QColor TextRect::fillColor()
+QColor TextRect::fillColor() const
 {
 	return brush().color();
 }
 
 /* Return the pattern used to fill in the rectangle.
  */
-Qt::BrushStyle TextRect::fillStyle()
+Qt::BrushStyle TextRect::fillStyle() const
 {
 	return brush().style();
 }
 	
 /* Return the color of the outside edge of the rectangle.
  */
-QColor TextRect::borderColor()
+QColor TextRect::borderColor() const
 {
 	return pen().color();
 }
 
 /* Return the pen style of the outside edge.
  */
-Qt::PenStyle TextRect::borderStyle()
+Qt::PenStyle TextRect::borderStyle() const
 {
 	return pen().style();
 }
 
 /* Return the width of the outside border.
  */
-int TextRect::borderWidth()
+int TextRect::borderWidth() const
 {
 	return pen().width();
 }
 
 /* Return the width the rectangle will be with the currently set text.
  */
-int TextRect::width()
+int TextRect::width() const
 {
 	return (int)actualTextWidth() + 4;
 }
 
 /* Return the height of the rectangle with the currently set text.
  */
-int TextRect::height()
+int TextRect::height() const
 {
 	return (int)m_text->document()->size().height();
 }
 
 /* Return the x coordinate of the left edge of the rectangle.
  */
-int TextRect::x()
+int TextRect::x() const
 {
 	return rect().x();
 }
 
 /* Return the y coordinate of the top edge of the rectangle.
  */
-int TextRect::y()
+int TextRect::y() const
 {
 	return rect().y();
 }
@@ -197,3 +197,4 @@ void TextRect::show()
 	QGraphicsRectItem::show();
 	m_text->show();
 }
+

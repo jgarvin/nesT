@@ -19,8 +19,8 @@ public:
 	virtual ~RomCanvas();
 	
 	virtual void displayText(const QString & text, int msecs = 3000);
-	virtual int width();
-	virtual int height();
+	virtual int width() const;
+	virtual int height() const;
 
 public slots:
 	virtual void resize();

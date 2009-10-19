@@ -29,12 +29,12 @@ RomCanvas::~RomCanvas()
 	delete m_textRect;
 }
 
-int RomCanvas::width()
+int RomCanvas::width() const
 {
 	return viewport()->width();
 }
 
-int RomCanvas::height()
+int RomCanvas::height() const
 {
 	return viewport()->height();
 }

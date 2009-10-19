@@ -1,0 +1,78 @@
+/*
+ * Contains an implementation of a single 4-color palette used for for a sprite.  These palletes are
+ * really just indices into a master palette, which is implemented elsewhere.  See here for more
+ * info: http://wiki.nesdev.com/w/index.php/PPU_palettes
+ */
+
+#include <toast/assert.hpp>
+#include <cstring>
+#include "nes_color_palette.hpp"
+
+/* indices must point to at least 4 values.  We just keep the pointer to master, not the contents.
+ */
+nes_color_palette::nes_color_palette(nes_master_palette *master, const uint8_t *indices)
+{
+	TOAST_ASSERT_NOT_NULL(master);   // I'm sure there's a better solution...
+	m_master = master;
+	
+	if(indices != NULL)
+		memcpy((void *)m_pal, (const void *)indices, PALETTE_SIZE);
+	else
+		memset((void *)m_pal, 0, PALETTE_SIZE);
+}
+
+nes_color_palette::~nes_color_palette()
+{
+}
+
+/* Change one of the colors in this palette to refer to a different color in the object's master
+ * palette.  For example, calling set_color(1, 0x0A) sets color 1 in the palette to refer to 0x0A in
+ * the master, which is green in the default master.  Has no effect if index is greater than 3 or if
+ * color is greater than the master palette size-1 (63 by default).
+ */
+void nes_color_palette::set_color_ref(uint8_t index, uint8_t ref)
+{
+	if(index < PALETTE_SIZE && ref < m_master->size())
+		m_pal[index] = ref;
+}
+
+/* Get the reference into the master palette where this index points to.  Returns 0xFF (which is
+ * invalid) if the index is out of bounds.
+ */
+uint8_t nes_color_palette::color_ref(uint8_t index) const
+{
+	return (index < PALETTE_SIZE ? m_pal[index] : 0xFF);
+}
+
+/* Get the 32-bit color value in the master color palette that is referenced by the given index.
+ * Note that the NES supports color modifications (such as monochrome mode) and so the color
+ * returned is the color after those mods are applied.
+ */
+uint32_t nes_color_palette::color(uint8_t index) const
+{
+	return m_master->color(color_ref(index));
+}
+
+/* Just like the above method, but this returns the actual unmodified color from the palette.  Use
+ * this one if you want to use it to change the colors in the master palette.
+ */
+uint32_t nes_color_palette::actual_color(uint8_t index) const
+{
+	return m_master->actual_color(color_ref(index));
+}
+
+/* Set the master color palette.  This is the large palette from which this palette can choose its
+ * colors from.  It's up to the caller to figure out what to do with the old palette.
+ */
+void nes_color_palette::set_master_palette(nes_master_palette *master)
+{
+	if(master)
+		m_master = master;
+}
+
+/* Get a pointer to the master palette.  Modifying its contents will affect this palette.
+ */
+nes_master_palette * nes_color_palette::master_palette() const
+{
+	return m_master;
+}

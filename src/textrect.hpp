@@ -30,25 +30,25 @@ public:
 	void setBorderWidth(int w);
 	
 
-	QString text();
-	int textWidth();
-	int actualTextWidth();
-	QColor textColor();
+	QString text() const;
+	int textWidth() const;
+	int actualTextWidth() const;
+	QColor textColor() const;
 	
-	QColor fillColor();
-	Qt::BrushStyle fillStyle();
+	QColor fillColor() const;
+	Qt::BrushStyle fillStyle() const;
 	
-	QColor borderColor();
-	Qt::PenStyle borderStyle();
-	int borderWidth();
+	QColor borderColor() const;
+	Qt::PenStyle borderStyle() const;
+	int borderWidth() const;
 
-	int width();
-	int height();
-	int x();
-	int y();
+	int width() const;
+	int height() const;
+	int x() const;
+	int y() const;
 
 	void show();
-	
+
 protected:
 	QGraphicsTextItem *m_text;
 	QBrush *m_fill;
