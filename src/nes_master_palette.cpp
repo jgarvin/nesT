@@ -43,34 +43,40 @@ void nes_master_palette::set_color(uint8_t index, uint32_t color)
  */
 uint32_t nes_master_palette::color(uint8_t index) const
 {
-	uint32_t result = 0xFFFFFFFF;
+	union
+	{
+		uint32_t value;
+		uint8_t  component[4];  // A, R, G, B
+	} result;
+
+	result.value = 0xFFFFFFFF;
 
 	if(index < MASTER_SIZE)
 	{
 		if(m_grayscale)
-			result = actual_color(index & 0x30);
+			result.value = actual_color(index & 0x30);
 		else
-			result = actual_color(index);
+			result.value = actual_color(index);
 
 		// Emphasis works by actually _deemphasizing_ the other colors, so if emphasis is enabled we
 	    // have to darken the components that are not emphasized.
 		if(m_emphasis)
 		{
 			uint8_t emp = m_emphasis;
-
+			
 			// oddly enough, we need to darken everything if all bits are set...
 			if(emp & (EMPHASIS_RED | EMPHASIS_GREEN | EMPHASIS_BLUE))
 				emp = 0;
 
 			if(!(emp & EMPHASIS_RED))
-				result &= ((result & 0x00FF0000) / 4) & 0x00FF0000;
+				result.component[1] = result.component[1] / 4;
 			if(!(emp & EMPHASIS_GREEN))
-				result &= ((result & 0x0000FF00) / 4) & 0x0000FF00;
+				result.component[2] = result.component[2] / 4;
 			if(!(emp & EMPHASIS_BLUE))
-				result &= ((result & 0x000000FF) / 4) & 0x000000FF;
+				result.component[3] = result.component[3] / 4;
 		}
 	}
-	return result;
+	return result.value;
 }
 
 /* Like the above method, but returns the unmodified palette color.  Use this if you want to modify
