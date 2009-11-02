@@ -9,6 +9,7 @@
  */
 
 #include <cstring>
+#include <toast/assert.hpp>
 #include "nes_master_palette.hpp"
 
 /* colors must point to at least 64 32-bit values.  This will use the default palette if the input
@@ -88,12 +89,12 @@ uint32_t nes_master_palette::actual_color(uint8_t index) const
 }
 
 /* Copy the values at the given pointer to this palette.  The pointed-to palette must have 64 colors
- * or else you'll get garbage in the palette.
+ * or else you'll get garbage in the palette.  Throws an exception if you pass in a NULL pointer.
  */
 void nes_master_palette::set_master(const uint32_t *colors)
 {
-	if(colors)
-		memcpy((void *)m_palette, (void *)colors, MASTER_SIZE);
+	TOAST_ASSERT_NOT_NULL(colors);
+	memcpy((void *)m_palette, (void *)colors, MASTER_SIZE);
 }
 
 /* Copy the values in this palette to the buffer.  The buffer must be able to hold at least 64
@@ -101,8 +102,8 @@ void nes_master_palette::set_master(const uint32_t *colors)
  */
 void nes_master_palette::copy_master(uint32_t *buffer) const
 {
-	if(buffer)
-		memcpy((void *)buffer, (void *)m_palette, MASTER_SIZE);
+	TOAST_ASSERT_NOT_NULL(buffer);
+	memcpy((void *)buffer, (void *)m_palette, MASTER_SIZE);
 }
 
 /* Copy the default palette into the buffer.  The buffer must be able to hold at least 64 32-bit
@@ -110,8 +111,15 @@ void nes_master_palette::copy_master(uint32_t *buffer) const
  */
 void nes_master_palette::copy_default(uint32_t *buffer) const
 {
-	if(buffer)
-		memcpy((void *)buffer, (void *)DEFAULT_MASTER, MASTER_SIZE);
+	TOAST_ASSERT_NOT_NULL(buffer);
+	memcpy((void *)buffer, (void *)DEFAULT_MASTER, MASTER_SIZE);
+}
+
+/* Reset the master palette back to using the default colors.
+ */
+void nes_master_palette::reset_to_default()
+{
+	memcpy((void *)m_palette, (void *)DEFAULT_MASTER, MASTER_SIZE);
 }
 
 /* Set the emphasis bits for the corresponding components.  Note that "emphasizing" one component
@@ -162,22 +170,23 @@ uint8_t nes_master_palette::size() const
 	return MASTER_SIZE;
 }
 
+// Note to self:  an alpha value of 0xFF is opaque...
 const uint32_t nes_master_palette::DEFAULT_MASTER[MASTER_SIZE] =
 {
-	0x00808080, 0x00003DA6, 0x000012B0, 0x00440096,
-	0x00A1005E, 0x00C70028, 0x00BA0600, 0x008C1700,
-	0x005C2F00, 0x00104500, 0x00054A00, 0x0000472E,
-	0x00004166, 0x00000000, 0x00050505, 0x00050505,
-	0x00C7C7C7, 0x000077FF, 0x002155FF, 0x008237FA,
-	0x00EB2FB5, 0x00FF2950, 0x00FF2200, 0x00D63200,
-	0x00C46200, 0x00358000, 0x00058F00, 0x00008A55,
-	0x000099CC, 0x00212121, 0x00090909, 0x00090909,
-	0x00FFFFFF, 0x000FD7FF, 0x0069A2FF, 0x00D480FF,
-	0x00FF45F3, 0x00FF618B, 0x00FF8833, 0x00FF9C12,
-	0x00FABC20, 0x009FE30E, 0x002BF035, 0x000CF0A4,
-	0x0005FBFF, 0x005E5E5E, 0x000D0D0D, 0x000D0D0D,
-	0x00FFFFFF, 0x00A6FCFF, 0x00B3ECFF, 0x00DAABEB,
-	0x00FFA8F9, 0x00FFABB3, 0x00FFD2B0, 0x00FFEFA6,
-	0x00FFF79C, 0x00D7E895, 0x00A6EDAF, 0x00A2F2DA,
-	0x0099FFFC, 0x00DDDDDD, 0x00111111, 0x00111111
+	0xFF808080, 0xFF003DA6, 0xFF0012B0, 0xFF440096,
+	0xFFA1005E, 0xFFC70028, 0xFFBA0600, 0xFF8C1700,
+	0xFF5C2F00, 0xFF104500, 0xFF054A00, 0xFF00472E,
+	0xFF004166, 0xFF000000, 0xFF050505, 0xFF050505,
+	0xFFC7C7C7, 0xFF0077FF, 0xFF2155FF, 0xFF8237FA,
+	0xFFEB2FB5, 0xFFFF2950, 0xFFFF2200, 0xFFD63200,
+	0xFFC46200, 0xFF358000, 0xFF058F00, 0xFF008A55,
+	0xFF0099CC, 0xFF212121, 0xFF090909, 0xFF090909,
+	0xFFFFFFFF, 0xFF0FD7FF, 0xFF69A2FF, 0xFFD480FF,
+	0xFFFF45F3, 0xFFFF618B, 0xFFFF8833, 0xFFFF9C12,
+	0xFFFABC20, 0xFF9FE30E, 0xFF2BF035, 0xFF0CF0A4,
+	0xFF05FBFF, 0xFF5E5E5E, 0xFF0D0D0D, 0xFF0D0D0D,
+	0xFFFFFFFF, 0xFFA6FCFF, 0xFFB3ECFF, 0xFFDAABEB,
+	0xFFFFA8F9, 0xFFFFABB3, 0xFFFFD2B0, 0xFFFFEFA6,
+	0xFFFFF79C, 0xFFD7E895, 0xFFA6EDAF, 0xFFA2F2DA,
+	0xFF99FFFC, 0xFFDDDDDD, 0xFF111111, 0xFF111111
 };

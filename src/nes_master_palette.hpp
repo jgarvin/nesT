@@ -26,7 +26,8 @@ public:
 	void set_master(const uint32_t *colors);
 	void copy_master(uint32_t *buffer) const;
 	void copy_default(uint32_t *buffer) const;
-
+	void reset_to_default();
+	
 	void set_emphasis(bool r, bool g, bool b);
 	void set_grayscale(bool enabled);
 	uint8_t emphasis() const;

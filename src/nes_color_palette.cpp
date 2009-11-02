@@ -12,7 +12,7 @@
  */
 nes_color_palette::nes_color_palette(nes_master_palette *master, const uint8_t *indices)
 {
-	TOAST_ASSERT_NOT_NULL(master);   // I'm sure there's a better solution...
+	TOAST_ASSERT_NOT_NULL(master);
 	m_master = master;
 	
 	if(indices != NULL)
@@ -80,12 +80,13 @@ uint8_t nes_color_palette::color_ref(uint8_t index) const
 }
 
 /* Set the master color palette.  This is the large palette from which this palette can choose its
- * colors from.  It's up to the caller to figure out what to do with the old palette.
+ * colors from.  It's up to the caller to figure out what to do with the old palette.  This will
+ * throw an exception if you pass in a NULL pointer.
  */
 void nes_color_palette::set_master_palette(nes_master_palette *master)
 {
-	if(master)
-		m_master = master;
+	TOAST_ASSERT_NOT_NULL(master);
+	m_master = master;
 }
 
 /* Get a pointer to the master palette.  Modifying its contents will affect this palette.
