@@ -40,8 +40,8 @@ bool nes_color_palette::apply_colors(boost::multi_array<uint8_t, 2> *input_data,
 									 boost::multi_array<uint32_t, 2> *output_image)
 {
 	// get iterators for our rows (x-coordindate)
-	/*boost::multi_array<uint8_t, 2>::iterator*/ auto  in_itrx  = input_data->begin();
-	boost::multi_array<uint32_t, 2>::iterator out_itrx = output_image->begin();
+	auto in_itrx  = input_data->begin();
+	auto out_itrx = output_image->begin();
 
 	uint32_t the_color = 0;
 	bool result = true;
@@ -49,8 +49,8 @@ bool nes_color_palette::apply_colors(boost::multi_array<uint8_t, 2> *input_data,
 	for(; in_itrx != input_data->end() && out_itrx != output_image->end(); ++in_itrx, ++out_itrx)
 	{
 		// get iterators for the columns in the the row (y-coordinate)
-		boost::multi_array<uint8_t, 1>::iterator in_itry = (*in_itrx).begin();
-		boost::multi_array<uint32_t, 1>::iterator out_itry = (*out_itrx).begin();
+		auto in_itry = (*in_itrx).begin();
+		auto out_itry = (*out_itrx).begin();
 
 		for(; in_itry != (*in_itrx).end() && out_itry != (*out_itrx).end(); ++in_itry, ++out_itry)
 		{
