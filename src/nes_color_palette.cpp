@@ -6,19 +6,25 @@
 
 #include <toast/assert.hpp>
 #include <cstring>
+#include <algorithm>
 #include "nes_color_palette.hpp"
 
 /* indices must point to at least 4 values.  We just keep the pointer to master, not the contents.
  */
-nes_color_palette::nes_color_palette(nes_master_palette *master, const uint8_t *indices)
+nes_color_palette::nes_color_palette(nes_master_palette *master, const std::vector<uint8_t> *indices)
 {
 	TOAST_ASSERT_NOT_NULL(master);
 	m_master = master;
 	
-	if(indices != NULL)
-		memcpy((void *)m_pal, (const void *)indices, PALETTE_SIZE);
+	m_pal.resize(PALETTE_SIZE);
+
+	if(indices)
+	{
+		TOAST_ASSERT(indices->size() >= PALETTE_SIZE);
+		std::copy(indices->begin(), indices->begin() + PALETTE_SIZE, m_pal.begin());
+	}
 	else
-		memset((void *)m_pal, 0, PALETTE_SIZE);
+		m_pal = std::vector<uint8_t>(PALETTE_SIZE);
 }
 
 nes_color_palette::~nes_color_palette()
@@ -34,7 +40,7 @@ bool nes_color_palette::apply_colors(boost::multi_array<uint8_t, 2> *input_data,
 									 boost::multi_array<uint32_t, 2> *output_image)
 {
 	// get iterators for our rows (x-coordindate)
-	boost::multi_array<uint8_t, 2>::iterator  in_itrx  = input_data->begin();
+	/*boost::multi_array<uint8_t, 2>::iterator*/ auto  in_itrx  = input_data->begin();
 	boost::multi_array<uint32_t, 2>::iterator out_itrx = output_image->begin();
 
 	uint32_t the_color = 0;
@@ -62,26 +68,28 @@ bool nes_color_palette::apply_colors(boost::multi_array<uint8_t, 2> *input_data,
 
 /* Change one of the colors in this palette to refer to a different color in the object's master
  * palette.  For example, calling set_color(1, 0x0A) sets color 1 in the palette to refer to 0x0A in
- * the master, which is green in the default master.  Has no effect if index is greater than 3 or if
- * color is greater than the master palette size-1 (63 by default).
+ * the master, which is green in the default master.  Index must be less than 3 and color less than
+ * the master palette size (64).
  */
 void nes_color_palette::set_color_ref(uint8_t index, uint8_t ref)
 {
-	if(index < PALETTE_SIZE && ref < m_master->size())
-		m_pal[index] = ref;
+	TOAST_ASSERT(index < PALETTE_SIZE);
+	TOAST_ASSERT(ref < m_master->size());
+	m_pal[index] = ref;
 }
 
-/* Get the reference into the master palette where this index points to.  Returns 0xFF (which is
- * invalid) if the index is out of bounds.
+/* Get the reference into the master palette where this index points to.  Index must be less than
+ * the palette size (4).
  */
 uint8_t nes_color_palette::color_ref(uint8_t index) const
 {
-	return (index < PALETTE_SIZE ? m_pal[index] : 0xFF);
+	TOAST_ASSERT(index < PALETTE_SIZE);
+	return m_pal[index];
 }
 
 /* Set the master color palette.  This is the large palette from which this palette can choose its
  * colors from.  It's up to the caller to figure out what to do with the old palette.  This will
- * throw an exception if you pass in a NULL pointer.
+ * fail if you pass in a NULL pointer.
  */
 void nes_color_palette::set_master_palette(nes_master_palette *master)
 {

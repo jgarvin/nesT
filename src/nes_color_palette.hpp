@@ -9,6 +9,7 @@
 #define INCLUDED_NEST_NES_COLOR_PALETTE_HPP
 
 #include <cstdint>
+#include <vector>
 #include <boost/multi_array.hpp>
 
 #include "sprite.hpp"
@@ -18,7 +19,7 @@
 class nes_color_palette
 {
 public:
-	nes_color_palette(nes_master_palette *master, const uint8_t *indices = NULL);
+	nes_color_palette(nes_master_palette *master, const std::vector<uint8_t> *refs = NULL);
 	~nes_color_palette();
 
 	bool apply_colors(boost::multi_array<uint8_t, 2> *input_data, 
@@ -35,7 +36,7 @@ private:
 
 	static const uint8_t PALETTE_SIZE = 4;
 	
-	uint8_t m_pal[PALETTE_SIZE];
+	std::vector<uint8_t> m_pal;
 	nes_master_palette *m_master;
 };
 

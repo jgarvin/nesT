@@ -9,18 +9,24 @@
  */
 
 #include <cstring>
+#include <algorithm>
 #include <toast/assert.hpp>
 #include "nes_master_palette.hpp"
 
 /* colors must point to at least 64 32-bit values.  This will use the default palette if the input
  * is NULL (default).
  */
-nes_master_palette::nes_master_palette(const uint32_t *colors)
+nes_master_palette::nes_master_palette(const std::vector<uint32_t> *colors)
 {
+	m_palette.resize(MASTER_SIZE);
+
 	if(colors)
-		memcpy((void *)m_palette, (void *)colors, MASTER_SIZE);
+	{
+		TOAST_ASSERT(colors->size() >= MASTER_SIZE);
+		std::copy(colors->begin(), colors->begin() + MASTER_SIZE, m_palette.begin());
+	}
 	else
-		memcpy((void *)m_palette, (void *)DEFAULT_MASTER, MASTER_SIZE);
+		m_palette = DEFAULT_MASTER;
 
 	m_emphasis = 0;
 	m_grayscale = false;
@@ -34,8 +40,8 @@ nes_master_palette::~nes_master_palette()
  */
 void nes_master_palette::set_color(uint8_t index, uint32_t color)
 {
-	if(index < MASTER_SIZE)
-		m_palette[index] = color;
+	TOAST_ASSERT(index < MASTER_SIZE);
+	m_palette[index] = color;
 }
 
 /* Get the currently-set color at the given index.  The NES can modify the colors by emphasizing
@@ -50,33 +56,33 @@ uint32_t nes_master_palette::color(uint8_t index) const
 		uint8_t  component[4];  // A, R, G, B
 	} result;
 
-	result.value = 0xFFFFFFFF;
+	result.value = 0;
 
-	if(index < MASTER_SIZE)
+	TOAST_ASSERT(index < MASTER_SIZE);
+	
+	if(m_grayscale)
+		result.value = actual_color(index & 0x30);
+	else
+		result.value = actual_color(index);
+
+	// Emphasis works by actually _deemphasizing_ the other colors, so if emphasis is enabled we
+	// have to darken the components that are not emphasized.
+	if(m_emphasis)
 	{
-		if(m_grayscale)
-			result.value = actual_color(index & 0x30);
-		else
-			result.value = actual_color(index);
-
-		// Emphasis works by actually _deemphasizing_ the other colors, so if emphasis is enabled we
-	    // have to darken the components that are not emphasized.
-		if(m_emphasis)
-		{
-			uint8_t emp = m_emphasis;
+		uint8_t emp = m_emphasis;
 			
-			// oddly enough, we need to darken everything if all bits are set...
-			if(emp & (EMPHASIS_RED | EMPHASIS_GREEN | EMPHASIS_BLUE))
-				emp = 0;
+		// oddly enough, we need to darken everything if all bits are set...
+		if(emp & (EMPHASIS_RED | EMPHASIS_GREEN | EMPHASIS_BLUE))
+			emp = 0;
 
-			if(!(emp & EMPHASIS_RED))
-				result.component[1] = result.component[1] / 4;
-			if(!(emp & EMPHASIS_GREEN))
-				result.component[2] = result.component[2] / 4;
-			if(!(emp & EMPHASIS_BLUE))
-				result.component[3] = result.component[3] / 4;
-		}
+		if(!(emp & EMPHASIS_RED))
+			result.component[1] = result.component[1] / 4;
+		if(!(emp & EMPHASIS_GREEN))
+			result.component[2] = result.component[2] / 4;
+		if(!(emp & EMPHASIS_BLUE))
+			result.component[3] = result.component[3] / 4;
 	}
+	
 	return result.value;
 }
 
@@ -85,41 +91,42 @@ uint32_t nes_master_palette::color(uint8_t index) const
  */
 uint32_t nes_master_palette::actual_color(uint8_t index) const
 {
-	return (index < MASTER_SIZE ? m_palette[index] : 0xFFFFFFFF);
+	TOAST_ASSERT(index < MASTER_SIZE);
+	return m_palette[index];
 }
 
-/* Copy the values at the given pointer to this palette.  The pointed-to palette must have 64 colors
- * or else you'll get garbage in the palette.  Throws an exception if you pass in a NULL pointer.
+/* Copy the values at the given pointer to this palette.  The pointed-to palette must have 64
+ * colors.  Throws an exception if you pass in a NULL pointer.
  */
-void nes_master_palette::set_master(const uint32_t *colors)
+void nes_master_palette::set_master(const std::vector<uint32_t> *colors)
 {
 	TOAST_ASSERT_NOT_NULL(colors);
-	memcpy((void *)m_palette, (void *)colors, MASTER_SIZE);
+	TOAST_ASSERT(colors->size() >= MASTER_SIZE);
+	
+	std::copy(colors->begin(), colors->begin() + MASTER_SIZE, m_palette.begin());
 }
 
-/* Copy the values in this palette to the buffer.  The buffer must be able to hold at least 64
- * 32-bit values.
+/* Copy the values in this palette to the buffer.
  */
-void nes_master_palette::copy_master(uint32_t *buffer) const
+void nes_master_palette::copy_master(std::vector<uint32_t> *dest) const
 {
-	TOAST_ASSERT_NOT_NULL(buffer);
-	memcpy((void *)buffer, (void *)m_palette, MASTER_SIZE);
+	TOAST_ASSERT_NOT_NULL(dest);
+	*dest = m_palette;
 }
 
-/* Copy the default palette into the buffer.  The buffer must be able to hold at least 64 32-bit
- * values.
+/* Copy the default palette into the buffer.
  */
-void nes_master_palette::copy_default(uint32_t *buffer) const
+void nes_master_palette::copy_default(std::vector<uint32_t> *dest) const
 {
-	TOAST_ASSERT_NOT_NULL(buffer);
-	memcpy((void *)buffer, (void *)DEFAULT_MASTER, MASTER_SIZE);
+	TOAST_ASSERT_NOT_NULL(dest);
+	*dest = DEFAULT_MASTER;
 }
 
 /* Reset the master palette back to using the default colors.
  */
 void nes_master_palette::reset_to_default()
 {
-	memcpy((void *)m_palette, (void *)DEFAULT_MASTER, MASTER_SIZE);
+	m_palette = DEFAULT_MASTER;
 }
 
 /* Set the emphasis bits for the corresponding components.  Note that "emphasizing" one component
@@ -167,11 +174,11 @@ bool nes_master_palette::grayscale() const
  */
 uint8_t nes_master_palette::size() const
 {
-	return MASTER_SIZE;
+	return m_palette.size();
 }
 
 // Note to self:  an alpha value of 0xFF is opaque...
-const uint32_t nes_master_palette::DEFAULT_MASTER[MASTER_SIZE] =
+const std::vector<uint32_t> nes_master_palette::DEFAULT_MASTER =
 {
 	0xFF808080, 0xFF003DA6, 0xFF0012B0, 0xFF440096,
 	0xFFA1005E, 0xFFC70028, 0xFFBA0600, 0xFF8C1700,
