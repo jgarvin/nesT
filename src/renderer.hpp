@@ -53,5 +53,5 @@ private:
 					   QWidget *widget = 0);
 
 	boost::multi_array<uint32_t, 2> frame_buffer;
-
+	uint32_t frame_width, frame_height;
 };

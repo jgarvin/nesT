@@ -11,8 +11,17 @@
 renderer::renderer()
 	: QGraphicsItem(), frame_buffer(boost::extents[320][240])
 {
+	frame_width = 320;
+	frame_height = 240;
 }
 
 renderer::~renderer()
 {
 }
+
+void renderer::set_resolution(uint32_t w, uint32_t h)
+{
+	frame_buffer.resize(boost::extents[w][h]);
+	prepareGeometryChange();       // tells Qt that the object's size has changed
+}
+
