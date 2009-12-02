@@ -7,13 +7,12 @@
  */
 
 #include <QGraphicsItem>
-#include <QImage>
 #include <QRect>
 #include <boost/multi_array.hpp>
+#include <QPainter>
 
 #include "nes_color_palette.hpp"
 
-class QPainter;
 class QStyleOptionGraphicsItem;
 
 typedef struct sprite_attribute_t
@@ -32,26 +31,32 @@ typedef struct render_context_t
 {
 	sprite_attribute *attribute;
 	nes_color_palette *palette;
-	// how about a post-processor, like a scaler or something?
 } render_context;
+
+// TODO:  Add support for post-processor objects, such as scalers
 
 class renderer : public QGraphicsItem
 {
-	friend class RomCanvas;
+	friend class RomCanvas;        // paint() and boundingRect() are called by this
 
 public:
 	renderer();
 	virtual ~renderer();
 	
-	virtual void set_resolution(int w, int h);
-	
+	virtual void set_resolution(uint32_t w, uint32_t h);	
 	virtual void render(boost::multi_array<uint8_t, 2> *sprite, render_context *context);
 
 private:
 	virtual QRectF boundingRect() const;
 	virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 					   QWidget *widget = 0);
+	
+    // native resolution of NES 
+	static const uint32_t NES_WIDTH  = 256,
+		                  NES_HEIGHT = 240;
+	
+	// display size
+	uint32_t m_width, m_height;
 
-	boost::multi_array<uint32_t, 2> frame_buffer;
-	uint32_t frame_width, frame_height;
+	boost::multi_array<uint32_t, 2> m_framebuffer;
 };

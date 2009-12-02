@@ -46,13 +46,13 @@ bool nes_color_palette::apply_colors(boost::multi_array<uint8_t, 2> *input_data,
 	uint32_t the_color = 0;
 	bool result = true;
 
-	for(; in_itrx != input_data->end() && out_itrx != output_image->end(); ++in_itrx, ++out_itrx)
+	for(; in_itrx < input_data->end() && out_itrx < output_image->end(); ++in_itrx, ++out_itrx)
 	{
 		// get iterators for the columns in the the row (y-coordinate)
-		auto in_itry = (*in_itrx).begin();
-		auto out_itry = (*out_itrx).begin();
+		auto in_itry = in_itrx->begin();
+		auto out_itry = out_itrx->begin();
 
-		for(; in_itry != (*in_itrx).end() && out_itry != (*out_itrx).end(); ++in_itry, ++out_itry)
+		for(; in_itry < in_itrx->end() && out_itry < out_itrx->end(); ++in_itry, ++out_itry)
 		{
 			the_color = color(*in_itry);
 			
