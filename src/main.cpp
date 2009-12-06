@@ -10,9 +10,11 @@
 #include <SDL/SDL.h>
 
 #include "mainwindow.hpp"
+#include "renderer.hpp"
 #include "rom.hpp"
 
 namespace po = boost::program_options;
+
 
 bool SDLSetup()
 {
@@ -107,8 +109,9 @@ int main(int argc, char *argv[])
 
 	log.writeToLog("Setting up QT4...");
 	QApplication app(argc, argv);
+	renderer mainwindow_renderer;
 
-	MainWindow window;
+	MainWindow window(NULL, &mainwindow_renderer);
 	window.show();
 	window.resize(640, 480);
 

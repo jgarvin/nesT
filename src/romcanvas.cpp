@@ -3,14 +3,19 @@
  */
 
 #include "romcanvas.hpp"
+#include "nest_shared.hpp"
+
 #include <iostream>
 #include <QString>
 #include <QTimer>
 #include <QScrollBar>
+#include <toast/assert.hpp>
 
-RomCanvas::RomCanvas(QWidget *parent)
+RomCanvas::RomCanvas(QWidget *parent, renderer *the_renderer)
 	: QGraphicsView(parent)
 {	
+	TOAST_ASSERT_NOT_NULL(the_renderer);
+
 	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -22,11 +27,17 @@ RomCanvas::RomCanvas(QWidget *parent)
 
 	m_textRect = new TextRect();
 	m_scene->addItem(m_textRect);
+	m_textRect->setZValue(1);
+	
+	m_renderer = the_renderer;
+	m_scene->addItem(m_renderer);
+	m_renderer->setZValue(0);
 }
 
 RomCanvas::~RomCanvas()
 {
-	delete m_textRect;
+	// don't delete the renderer in case something else is using it!
+	m_scene->removeItem(m_renderer);
 }
 
 int RomCanvas::width() const
@@ -41,7 +52,7 @@ int RomCanvas::height() const
 
 
 /* Display text on screen for the given amount of time in milliseconds.  Default time is 3 seconds.
- * If the given time is 0 or less, the text will stay indefinitely.  Call hide_text() to remove it.
+ * If the given time is 0 or less, the text will stay indefinitely.  Call hideText() to remove it.
  */
 void RomCanvas::displayText(const QString & text, int msecs)
 {
@@ -52,7 +63,7 @@ void RomCanvas::displayText(const QString & text, int msecs)
 	m_textRect->show();
 
 	if(msecs > 0)
-		QTimer::singleShot(msecs, this, SLOT(hide_text()));
+		QTimer::singleShot(msecs, this, SLOT(hideText()));
 }
 
 /* Clear whatever text is being displayed by hiding the widget.
@@ -67,5 +78,9 @@ void RomCanvas::hideText()
  */ 
 void RomCanvas::resize()
 {
+	m_textRect->setTextWidth(width()/2);
+	m_textRect->setPos(5, height() - m_textRect->height() - 5);
+
 	m_scene->setSceneRect(0, 0, width(), height());
+
 }

@@ -46,6 +46,7 @@ void TextRect::setText(const QString & text)
 void TextRect::setTextWidth(int w)
 {
 	m_text->setTextWidth((qreal)w);
+	setRect(x(), y(), width(), height());
 }
 
 /* Set the text color.

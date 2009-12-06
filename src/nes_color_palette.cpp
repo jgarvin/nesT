@@ -31,38 +31,27 @@ nes_color_palette::~nes_color_palette()
 {
 }
 
-/* Uses the data in the input to create a colored image in the output.  Returns True when
- * completed.  The input data must be numbers 0-3 to correspond to the indices into this palette.
- * If not, then this function will return False to indicate an error in the resultant image.  Both
- * arrays must have the same dimension sizes for this to work correctly.
+/* Uses the data in the input to create a colored image in the output.  Returns True when completed.
+ * The input data must be numbers 0-3 to correspond to the indices into this palette.  Both arrays
+ * must have the same dimension sizes for this to work correctly.
  */
 bool nes_color_palette::apply_colors(boost::multi_array<uint8_t, 2> *input_data, 
 									 boost::multi_array<uint32_t, 2> *output_image)
 {
-	// get iterators for our rows (x-coordindate)
-	auto in_itrx  = input_data->begin();
-	auto out_itrx = output_image->begin();
+	// get iterators for our rows (y-coordindate)
+	auto in_itry  = input_data->begin();
+	auto out_itry = output_image->begin();
 
-	uint32_t the_color = 0;
-	bool result = true;
-
-	for(; in_itrx < input_data->end() && out_itrx < output_image->end(); ++in_itrx, ++out_itrx)
+	for(; in_itry < input_data->end() && out_itry < output_image->end(); ++in_itry, ++out_itry)
 	{
-		// get iterators for the columns in the the row (y-coordinate)
-		auto in_itry = in_itrx->begin();
-		auto out_itry = out_itrx->begin();
+		// get iterators for the columns in the the row (x-coordinate)
+		auto in_itrx = in_itry->begin();
+		auto out_itrx = out_itry->begin();
 
-		for(; in_itry < in_itrx->end() && out_itry < out_itrx->end(); ++in_itry, ++out_itry)
-		{
-			the_color = color(*in_itry);
-			
-			if(0xFFFFFFFF == the_color)    // index did not reference valid color
-				result = false;
-			
-			*out_itry = the_color;
-		}
+		for(; in_itrx < in_itry->end() && out_itrx < out_itry->end(); ++in_itrx, ++out_itrx)
+			*out_itrx = color(*in_itrx);
 	}
-	return result;
+	return true;
 }
 
 

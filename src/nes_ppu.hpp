@@ -2,6 +2,7 @@
 #define INCLUDED_NEST_NES_PPU_HPP
 
 #include <cstdint>
+#include "renderer.hpp"
 
 //#include "nes_ppu_status.hpp"
 
@@ -15,17 +16,7 @@ private:
 	union
 	{
 		char raw_data[256];
-		struct
-		{
-			uint32_t y_pos:8;      // top of sprite; the NES adds 1 to this
-			uint32_t tile_num:8;   // for 8x16 sprites, LSb which bank to use
-			uint32_t palette:2;
-			uint32_t unused:3;
-			uint32_t priority:1;   // 0: in front of BG; 1: behind BG
-			uint32_t flip_hor:1;
-			uint32_t flip_ver:1;
-			uint32_t x_pos:8;
-		} attribute[64];
+		sprite_attribute attribute[64];
 	} sprite_ram;
 
 

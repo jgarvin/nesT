@@ -6,10 +6,14 @@
  * and boundingRect().
  */
 
+#ifndef INCLUDED_NEST_RENDERER_HPP
+#define INCLUDED_NEST_RENDERER_HPP
+
+#include <cstdint>
 #include <QGraphicsItem>
 #include <QRect>
-#include <boost/multi_array.hpp>
 #include <QPainter>
+#include <boost/multi_array.hpp>
 
 #include "nes_color_palette.hpp"
 
@@ -45,6 +49,7 @@ public:
 	
 	virtual void set_resolution(uint32_t w, uint32_t h);	
 	virtual void render(boost::multi_array<uint8_t, 2> *sprite, render_context *context);
+	virtual void update();
 
 private:
 	virtual QRectF boundingRect() const;
@@ -60,3 +65,5 @@ private:
 
 	boost::multi_array<uint32_t, 2> m_framebuffer;
 };
+
+#endif // INCLUDED_NEST_RENDERER_HPP

@@ -11,11 +11,11 @@ sprite::sprite(const char* raw_data)
 	for(int i = 0; i < HEIGHT; ++i) {
 		for(int j = 0; j < WIDTH; ++j)
 		{
-			char mask = 1 << i;
-			char valA = mask & channelA[j] ? 1 : 0;
-			char valB = mask & channelB[j] ? 2 : 0; // B channel gets more weight
+			char mask = 1 << (7-j);
+			char valA = mask & channelA[i] ? 1 : 0;
+			char valB = mask & channelB[i] ? 2 : 0; // B channel gets more weight
 
-			color_layout_[i][j] = valA + valB;
+			color_layout_[i][j] = (uint8_t)(valA + valB);
 		}
 	}
 }

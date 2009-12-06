@@ -8,9 +8,10 @@
 
 #include <QImage>
 #include "renderer.hpp"
+#include <iostream>
 
 renderer::renderer()
-	: QGraphicsItem(), m_framebuffer(boost::extents[NES_WIDTH][NES_HEIGHT])
+	: QGraphicsItem(), m_framebuffer(boost::extents[NES_HEIGHT][NES_WIDTH])
 {
 	m_width  = NES_WIDTH;
 	m_height = NES_HEIGHT;
@@ -37,19 +38,29 @@ void renderer::set_resolution(uint32_t w, uint32_t h)
 void renderer::render(boost::multi_array<uint8_t, 2> *sprite, render_context *context)
 {
 	boost::multi_array<uint32_t, 2> colored_sprite(boost::extents[sprite->size()][sprite[0].size()]);
-	auto cs_x = colored_sprite.begin();
-	auto fb_x = m_framebuffer.begin() + (context->attribute->x_pos);
+
+	// get iterators for our rows (y-coordinate)...
+	auto cs_y = colored_sprite.begin();
+	auto fb_y = m_framebuffer.begin() + (context->attribute->y_pos) /*+ 1*/;  // NES hardware adds 1
 
 	context->palette->apply_colors(sprite, &colored_sprite);
 
-	for(; cs_x < colored_sprite.end() && fb_x < m_framebuffer.end(); ++cs_x, ++fb_x)
+	for(; cs_y < colored_sprite.end() && fb_y < m_framebuffer.end(); ++cs_y, ++fb_y)
 	{
-		auto cs_y = cs_x->begin();
-		auto fb_y = fb_x->begin() + (context->attribute->y_pos) + 1;  // NES hardware adds 1
+		// ...and for our columns (x-coordinate)
+		auto cs_x = cs_y->begin();
+		auto fb_x = fb_y->begin() + (context->attribute->x_pos); 
 
-		for(; cs_y < cs_x->end() && fb_y < fb_x->end(); ++cs_y, ++fb_y)
-			*fb_y = *cs_y;
+		for(; cs_x < cs_y->end() && fb_x < fb_y->end(); ++cs_x, ++fb_x)
+			*fb_x = *cs_x;
 	}		
+}
+
+/* Ask Qt to redraw the contents of the framebuffer to the screen.
+ */
+void renderer::update()
+{
+	QGraphicsItem::update(boundingRect());
 }
 
 ///
@@ -57,7 +68,7 @@ void renderer::render(boost::multi_array<uint8_t, 2> *sprite, render_context *co
 ///
 
 /* Returns the bounding rectangle of the drawn object.  Here, we're just going to draw the whole
- * framebuffer, so we can simply give the rectangle coresponding to its borders.
+ * framebuffer, so we can simply give the rectangle coresponding to image's final scaled size.
  */
 QRectF renderer::boundingRect() const
 {
@@ -68,7 +79,7 @@ QRectF renderer::boundingRect() const
  */
 void renderer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-	QImage image((const uchar *)m_framebuffer.data(), NES_WIDTH, NES_HEIGHT, 4,
+	QImage image((const uchar *)m_framebuffer.data(), NES_WIDTH, NES_HEIGHT, NES_WIDTH*4,
 				 QImage::Format_ARGB32);
 
 // TODO:  We'd probably want to call any image filters (scalers, shaders, etc.) here..
